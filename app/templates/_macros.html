@@ -1,0 +1,28 @@
+{% macro csrf() %}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{% endmacro %}
+
+{% macro badges(post) %}
+  {% if post.approved_at %}<span class="badge badge-pro">✦ Freigegeben</span>{% endif %}
+  {% if post.is_top %}<span class="badge badge-top">Top 10</span>{% endif %}
+{% endmacro %}
+
+{% macro card(post) %}
+<article class="creation-card">
+  <a class="card-image" href="{{ url_for('main.detail', post_id=post.id) }}" tabindex="-1" aria-hidden="true"><img src="{{ url_for('main.post_image', post_id=post.id) }}" alt="" loading="lazy" width="640" height="400"></a>
+  <div class="card-content">
+    <div class="card-meta"><span>{{ post.category_name }}</span>{{ badges(post) }}</div>
+    <h2><a href="{{ url_for('main.detail', post_id=post.id) }}">{{ post.title }}</a></h2>
+    <p class="card-description">{{ post.description }}</p>
+    <div class="card-footer"><span>von {{ post.display_name }}</span><span class="like-count" aria-label="{{ post.like_count }} Likes">♡ {{ post.like_count }}</span></div>
+  </div>
+</article>
+{% endmacro %}
+
+{% macro pagination(page, pages, category='') %}
+{% if pages > 1 %}
+<nav class="pagination" aria-label="Seitennavigation">
+  {% if page > 1 %}<a class="button button-secondary" href="{{ url_for(request.endpoint, seite=page-1, kategorie=category) }}">← Zurück</a>{% endif %}
+  <span>Seite {{ page }} von {{ pages }}</span>
+  {% if page < pages %}<a class="button button-secondary" href="{{ url_for(request.endpoint, seite=page+1, kategorie=category) }}">Weiter →</a>{% endif %}
+</nav>
+{% endif %}
+{% endmacro %}

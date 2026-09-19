@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import badges, pagination with context %}
+{% block title %}Beiträge verwalten{% endblock %}
+{% block content %}
+<section class="page-heading"><div><p class="eyebrow">MODERATION</p><h1>Beiträge verwalten.</h1><p class="lede">Kreationen prüfen, bearbeiten, löschen und für Professional freigeben.</p></div><span class="count">{{ total }} Beiträge</span></section>
+{% if g.user.role == 'admin' %}<nav class="management-tabs"><a aria-current="page" href="{{ url_for('admin.posts') }}">Beiträge</a><a href="{{ url_for('admin.users') }}">Userverwaltung</a></nav>{% endif %}
+{% if posts %}<div class="manage-list">{% for post in posts %}
+<article class="manage-row"><img src="{{ url_for('main.post_image', post_id=post.id) }}" width="120" height="80" alt="" loading="lazy"><div class="manage-row-content"><span class="muted">{{ post.category_name }} · von {{ post.display_name }}</span><h2><a href="{{ url_for('main.detail', post_id=post.id) }}">{{ post.title }}</a></h2><div class="badge-row">{{ badges(post) }}<span class="muted">♡ {{ post.like_count }} Likes</span></div></div><a class="button button-secondary" href="{{ url_for('main.detail', post_id=post.id) }}">Verwalten →</a></article>
+{% endfor %}</div>{% else %}<section class="empty-state"><h2>Noch keine Beiträge.</h2><p>Neue Kreationen erscheinen hier automatisch.</p></section>{% endif %}
+{{ pagination(page, pages) }}
+{% endblock %}

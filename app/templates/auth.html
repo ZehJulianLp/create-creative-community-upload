@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import csrf with context %}
+{% block title %}{{ 'Registrieren' if registering else 'Anmelden' }}{% endblock %}
+{% block content %}
+<section class="auth-panel">
+  <p class="eyebrow">CCC UPLOAD</p>
+  <h1>{{ 'Deine Ideen gehören hierher.' if registering else 'Zurück in die Werkstatt.' }}</h1>
+  <p class="muted">{{ 'Erstelle dein Konto und teile deine ersten Schematics.' if registering else 'Melde dich an, um Kreationen zu teilen und Likes zu vergeben.' }}</p>
+  {% if error %}<div class="notice notice-error" role="alert">{{ error }}</div>{% endif %}
+  <form method="post" class="stack-form">
+    {{ csrf() }}
+    {% if registering %}<label>Anzeigename<input name="display_name" autocomplete="nickname" minlength="2" maxlength="40" required value="{{ request.form.get('display_name', '') }}"><small>Dieser Name wird neben deinen Kreationen angezeigt.</small></label>{% endif %}
+    <label>E-Mail<input type="email" name="email" autocomplete="email" maxlength="254" required value="{{ request.form.get('email', '') }}"></label>
+    <label>Passwort<input type="password" name="password" autocomplete="{{ 'new-password' if registering else 'current-password' }}" {% if registering %}minlength="10"{% endif %} maxlength="128" required>{% if registering %}<small>Mindestens 10 Zeichen.</small>{% endif %}</label>
+    {% if registering %}<label>Passwort wiederholen<input type="password" name="password_confirm" autocomplete="new-password" minlength="10" maxlength="128" required></label><p class="form-hint">Du kannst dich direkt nach der Registrierung anmelden. Eine E-Mail-Bestätigung ist derzeit nicht nötig.</p>{% endif %}
+    <button class="button" type="submit">{{ 'Konto erstellen' if registering else 'Anmelden' }}</button>
+  </form>
+  <p class="auth-switch">{{ 'Schon dabei?' if registering else 'Noch kein Konto?' }} <a href="{{ url_for('auth.login') if registering else url_for('auth.register') }}">{{ 'Anmelden' if registering else 'Jetzt registrieren' }}</a></p>
+</section>
+{% endblock %}

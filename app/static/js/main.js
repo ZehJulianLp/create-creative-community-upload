@@ -1,31 +1,33 @@
-const statusText = document.querySelector("#server-status");
-const checkButton = document.querySelector("#check-status");
+const imageInput = document.querySelector('#image-input');
+const preview = document.querySelector('#image-preview');
+let previewUrl;
 
-async function checkStatus() {
-  checkButton.disabled = true;
-  statusText.textContent = "Verbindung wird geprüft …";
-  statusText.dataset.state = "loading";
+imageInput?.addEventListener('change', () => {
+  const file = imageInput.files[0];
+  if (!file) return;
+  if (previewUrl) URL.revokeObjectURL(previewUrl);
+  previewUrl = URL.createObjectURL(file);
+  preview.src = previewUrl;
+  preview.hidden = false;
+  document.querySelector('#image-placeholder').hidden = true;
+});
 
-  try {
-    const response = await fetch(checkButton.dataset.url, { cache: "no-store" });
-    if (!response.ok) {
-      throw new Error("Statusprüfung fehlgeschlagen");
-    }
-
-    const data = await response.json();
-    if (data.status !== "ok" || data.database !== "ok") {
-      throw new Error("Dienst ist nicht bereit");
-    }
-
-    statusText.textContent = "Server und Datenbank sind erreichbar.";
-    statusText.dataset.state = "success";
-  } catch (error) {
-    statusText.textContent = "Die Verbindung konnte nicht hergestellt werden.";
-    statusText.dataset.state = "error";
-  } finally {
-    checkButton.disabled = false;
-  }
-}
-
-checkButton.addEventListener("click", checkStatus);
-checkStatus();
+const dialog = document.querySelector('#confirm-dialog');
+let pendingForm;
+document.querySelectorAll('form[data-confirm]').forEach((form) => {
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    pendingForm = form;
+    document.querySelector('#confirm-message').textContent = form.dataset.confirm;
+    dialog.showModal();
+    document.querySelector('#confirm-cancel').focus();
+  });
+});
+document.querySelector('#confirm-cancel')?.addEventListener('click', () => dialog.close());
+document.querySelector('#confirm-submit')?.addEventListener('click', () => {
+  if (!pendingForm) return;
+  pendingForm.submit();
+  pendingForm = null;
+  dialog.close();
+});
+dialog?.addEventListener('close', () => { pendingForm = null; });

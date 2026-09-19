@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import csrf, pagination with context %}
+{% block title %}Userverwaltung{% endblock %}
+{% block content %}
+<section class="page-heading"><div><p class="eyebrow">ADMINISTRATION</p><h1>Die Menschen hinter den Ideen.</h1><p class="lede">Rollen vergeben und Konten aktivieren, sperren oder löschen.</p></div><span class="count">{{ total }} Konten</span></section>
+<nav class="management-tabs"><a href="{{ url_for('admin.posts') }}">Beiträge</a><a aria-current="page" href="{{ url_for('admin.users') }}">Userverwaltung</a></nav>
+<div class="user-list">{% for user in users %}
+<article class="user-row"><div class="user-info"><h2>{{ user.display_name }}{% if user.id == g.user.id %} <span class="badge">Du</span>{% endif %}</h2><span class="muted">{{ user.email }}</span><span class="status-label {{ 'active' if user.is_active else 'inactive' }}">{{ 'Aktiv' if user.is_active else 'Gesperrt' }}</span></div>
+{% if user.id != g.user.id %}
+<form class="user-controls" method="post" action="{{ url_for('admin.update_user', user_id=user.id) }}">{{ csrf() }}<input type="hidden" name="action" value="update"><label>Rolle für {{ user.display_name }}<select name="role">{% for value, label in role_labels.items() %}<option value="{{ value }}" {% if user.role == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label><label class="checkbox-label"><input type="checkbox" name="is_active" value="1" {% if user.is_active %}checked{% endif %}> Konto aktiv</label><button class="button button-secondary" type="submit">Speichern</button></form>
+<form method="post" action="{{ url_for('admin.update_user', user_id=user.id) }}" data-confirm="Das Konto von {{ user.display_name }}, alle eigenen Kreationen und alle zugehörigen Dateien und Likes werden dauerhaft gelöscht.">{{ csrf() }}<input type="hidden" name="action" value="delete"><button class="text-button danger-text" type="submit">Löschen</button></form>
+{% else %}<span class="muted">Eigenes Admin-Konto</span>{% endif %}
+</article>{% endfor %}</div>
+{{ pagination(page, pages) }}
+{% endblock %}

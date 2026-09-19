@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import csrf with context %}
+{% block title %}{{ 'Kreation bearbeiten' if post else 'Kreation hochladen' }}{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('main.detail', post_id=post.id) if post else url_for('main.mine') }}">← {{ 'Zur Kreation' if post else 'Meine Kreationen' }}</a>
+<section class="page-heading"><div><p class="eyebrow">DEINE WERKSTATT</p><h1>{{ 'Deiner Idee den Feinschliff geben.' if post else 'Zeig, was du gebaut hast.' }}</h1><p class="lede">{{ 'Aktualisiere deinen Beitrag. Bestehende Dateien bleiben erhalten, wenn du keine neuen auswählst.' if post else 'Lade ein Bild und deine Create-Schematic hoch. Dein Beitrag erscheint direkt in der Community.' }}</p></div></section>
+{% if error %}<div class="notice notice-error" role="alert">{{ error }} Bitte wähle bei Bedarf die Dateien erneut aus.</div>{% endif %}
+{% if post and post.approved_at %}<div class="notice notice-info">Beim Speichern wird die manuelle Professional-Freigabe zurückgesetzt. Danach kann die überarbeitete Kreation erneut freigegeben werden.</div>{% endif %}
+<form method="post" enctype="multipart/form-data" class="editor-form">
+  {{ csrf() }}
+  <div class="panel stack-form">
+    <h2>Die Kreation</h2>
+    <label>Name<input name="title" required minlength="3" maxlength="100" placeholder="Wie heißt deine Kreation?" value="{{ request.form.get('title', post.title if post else '') }}"></label>
+    <label>Kategorie<select name="category_id" required><option value="">Kategorie auswählen</option>{% for category in categories %}<option value="{{ category.id }}" {% if request.form.get('category_id', post.category_id if post else '')|string == category.id|string %}selected{% endif %}>{{ category.name }}</option>{% endfor %}</select></label>
+    <label>Beschreibung<textarea name="description" rows="12" minlength="10" maxlength="10000" required placeholder="Was macht deine Kreation aus? Nenne auch benötigte Mods und die Minecraft-/Create-Version.">{{ request.form.get('description', post.description if post else '') }}</textarea><small>Erkläre den Aufbau und welche Mods oder Versionen benötigt werden.</small></label>
+  </div>
+  <div class="stack-form">
+    <section class="panel stack-form"><h2>Bild & Schematic</h2>
+      <div class="image-preview-wrap"><img id="image-preview" class="image-preview" {% if post %}src="{{ url_for('main.post_image', post_id=post.id) }}"{% else %}hidden{% endif %} alt="Vorschau deiner Kreation"><p id="image-placeholder" {% if post %}hidden{% endif %}>Ein guter Blick auf deine Kreation.</p></div>
+      <label>Vorschaubild<input id="image-input" type="file" name="image" accept="image/png,image/jpeg,image/webp" {% if not post %}required{% endif %}><small>PNG, JPEG oder WebP. Maximal 8 MB und 20 Megapixel.</small></label>
+      <label>Create-Schematic<input type="file" name="schematic" accept=".nbt" {% if not post %}required{% endif %}><small>.nbt-Datei · maximal 20 MB{% if post %}<br>Aktuell: {{ post.original_filename }}{% endif %}</small></label>
+    </section>
+    <button class="button" type="submit">{{ 'Änderungen speichern' if post else 'Kreation veröffentlichen' }} →</button>
+    <a class="cancel-link" href="{{ url_for('main.detail', post_id=post.id) if post else url_for('main.mine') }}">Abbrechen</a>
+  </div>
+</form>
+{% endblock %}

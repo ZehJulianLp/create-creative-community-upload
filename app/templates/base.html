@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Entdecke und teile Minecraft Create Schematics auf CCC Upload. Züge, Häuser, Deko und mehr aus der Community.">
+    <title>{% block title %}Minecraft Create Schematics{% endblock %} · CCC Upload</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#content">Zum Inhalt</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="{{ url_for('main.index') }}" aria-label="CCC Upload – Startseite"><span class="brand-mark" aria-hidden="true">C³</span><span>CCC <strong>Upload</strong></span></a>
+        <nav class="main-nav" aria-label="Hauptnavigation">
+          <a href="{{ url_for('main.index') }}" {% if request.endpoint == 'main.index' %}aria-current="page"{% endif %}>Community</a>
+          <a href="{{ url_for('main.professional') }}" {% if request.endpoint == 'main.professional' %}aria-current="page"{% endif %}>Professional <span aria-hidden="true">✦</span></a>
+        </nav>
+        <div class="account-nav">
+          {% if g.user %}
+            <a class="button button-small" href="{{ url_for('main.create') }}">＋ Hochladen</a>
+            <details class="account-menu">
+              <summary>{{ g.user.display_name }} <span aria-hidden="true">⌄</span></summary>
+              <div class="account-dropdown">
+                <span class="muted">{{ role_labels[g.user.role] }}</span>
+                <a href="{{ url_for('main.mine') }}">Meine Kreationen</a>
+                {% if g.user.role in ('admin', 'moderator') %}<a href="{{ url_for('admin.posts') }}">Beiträge verwalten</a>{% endif %}
+                {% if g.user.role == 'admin' %}<a href="{{ url_for('admin.users') }}">Userverwaltung</a>{% endif %}
+                <form action="{{ url_for('auth.logout') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="text-button" type="submit">Abmelden</button></form>
+              </div>
+            </details>
+          {% else %}
+            <a href="{{ url_for('auth.login') }}">Anmelden</a>
+            <a class="button button-small" href="{{ url_for('auth.register') }}">Registrieren</a>
+          {% endif %}
+        </div>
+      </div>
+    </header>
+    <main id="content" class="container">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}<div class="notice notice-{{ category }}" role="status">{{ message }}</div>{% endfor %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer"><span>CCC Upload</span><span>Von der Community. Für deine nächste Kreation.</span><span>Ein unabhängiges Community-Projekt für Minecraft Create.</span></footer>
+    <dialog id="confirm-dialog" aria-labelledby="confirm-title">
+      <h2 id="confirm-title">Wirklich löschen?</h2><p id="confirm-message"></p>
+      <div class="actions"><button type="button" class="button button-secondary" id="confirm-cancel">Abbrechen</button><button type="button" class="button button-danger" id="confirm-submit">Endgültig löschen</button></div>
+    </dialog>
+  </body>
+</html>
