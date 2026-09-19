@@ -1,0 +1,74 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #203047;
+  background: #f3f6fa;
+  line-height: 1.6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.container {
+  width: min(100% - 2rem, 48rem);
+  margin: 10vh auto;
+}
+
+.eyebrow {
+  color: #3b579d;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  line-height: 1.15;
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 1.25rem;
+}
+
+.status-card {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border: 1px solid #d4dce8;
+  border-radius: 1rem;
+  background: #fff;
+}
+
+button {
+  padding: 0.75rem 1rem;
+  border: 0;
+  border-radius: 0.5rem;
+  color: #fff;
+  background: #3156a1;
+  font: inherit;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #24427e;
+}
+
+button:focus-visible {
+  outline: 3px solid #203047;
+  outline-offset: 3px;
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+[data-state="success"] {
+  color: #17613e;
+}
+
+[data-state="error"] {
+  color: #a32d2d;
+}

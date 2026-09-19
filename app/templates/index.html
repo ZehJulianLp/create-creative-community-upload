@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create Creative Community</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+  </head>
+  <body>
+    <main class="container">
+      <p class="eyebrow">Create Creative Community</p>
+      <h1>Dein Projekt startet hier.</h1>
+      <p>Die Grundlage für deine Community ist bereit.</p>
+      <section class="status-card" aria-labelledby="status-heading">
+        <h2 id="status-heading">Verbindungsstatus</h2>
+        <p id="server-status" role="status">Verbindung wird geprüft …</p>
+        <button id="check-status" type="button" data-url="{{ url_for('main.health') }}">
+          Erneut prüfen
+        </button>
+      </section>
+    </main>
+  </body>
+</html>
