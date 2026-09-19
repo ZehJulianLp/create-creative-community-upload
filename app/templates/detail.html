@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import csrf, badges with context %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('main.index') }}">← Zur Community</a>
+<div class="detail-layout">
+  <div class="detail-main">
+    <img class="detail-image" src="{{ url_for('main.post_image', post_id=post.id) }}" alt="{{ post.title }}" width="1200" height="750">
+    <section class="description-section"><h2>Über diese Kreation</h2><p class="description">{{ post.description }}</p></section>
+  </div>
+  <aside class="detail-sidebar">
+    <div class="badge-row">{{ badges(post) }}</div>
+    <a class="eyebrow" href="{{ url_for('main.index', kategorie=post.category_slug) }}">{{ post.category_name }}</a>
+    <h1>{{ post.title }}</h1>
+    <p class="creator">von <strong>{{ post.display_name }}</strong></p>
+    <p class="muted">Veröffentlicht am {{ post.created_at[8:10] }}.{{ post.created_at[5:7] }}.{{ post.created_at[:4] }}</p>
+    <div class="download-panel">
+      <a class="button full-width" href="{{ url_for('main.download', post_id=post.id) }}">↓ Schematic herunterladen</a>
+      <span class="file-label">{{ post.original_filename }}</span>
+      {% if g.user %}
+      <form method="post" action="{{ url_for('main.like', post_id=post.id) }}">
+        {{ csrf() }}<input type="hidden" name="action" value="{{ 'unlike' if post.liked else 'like' }}">
+        <button class="button like-button full-width {% if post.liked %}is-liked{% endif %}" type="submit" aria-pressed="{{ 'true' if post.liked else 'false' }}"><span aria-hidden="true">{{ '♥' if post.liked else '♡' }}</span> {{ post.like_count }} {{ 'Like' if post.like_count == 1 else 'Likes' }} <span>· {{ 'Like zurücknehmen' if post.liked else 'Gefällt mir' }}</span></button>
+      </form>
+      {% else %}<a class="button like-button full-width" href="{{ url_for('auth.login') }}">♡ {{ post.like_count }} Likes · Zum Liken anmelden</a>{% endif %}
+    </div>
+    {% if can_manage(post) %}
+    <section class="management-panel"><h2>Kreation verwalten</h2>
+      <a class="button button-secondary full-width" href="{{ url_for('main.edit', post_id=post.id) }}">Beitrag bearbeiten</a>
+      {% if g.user.role in ('moderator', 'admin') %}
+      <form method="post" action="{{ url_for('main.approve', post_id=post.id) }}">{{ csrf() }}<input type="hidden" name="action" value="{{ 'revoke' if post.approved_at else 'approve' }}"><button type="submit" class="button button-secondary full-width">{{ 'Manuelle Freigabe aufheben' if post.approved_at else '✦ Für Professional freigeben' }}</button></form>
+      {% if post.is_top %}<p class="form-hint">Dieser Beitrag ist unabhängig von einer manuellen Freigabe über die Top 10 im Professional-Bereich.</p>{% endif %}
+      {% endif %}
+      <form method="post" action="{{ url_for('main.delete', post_id=post.id) }}" data-confirm="Diese Kreation, ihre Dateien und alle zugehörigen Likes werden dauerhaft gelöscht.">{{ csrf() }}<button type="submit" class="text-button danger-text">Beitrag löschen</button></form>
+    </section>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

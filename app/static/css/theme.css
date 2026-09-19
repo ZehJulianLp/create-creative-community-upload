@@ -1,0 +1,14 @@
+:root {
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--ink);
+  background: #f8f9f5;
+  line-height: 1.5;
+  --ink: #263a2f;
+  --muted: #657269;
+  --accent: #476d42;
+  --accent-hover: #365432;
+  --surface: #fff;
+  --soft: #eef1e9;
+  --line: #dfe4d9;
+  --copper: #a97132;
+}

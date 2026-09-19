@@ -35,5 +35,8 @@ def init_db_command():
 
 
 def init_app(app):
+    from .auth import create_admin
+
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
+    app.cli.add_command(create_admin)

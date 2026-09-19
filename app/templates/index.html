@@ -1,24 +1,28 @@
-<!doctype html>
-<html lang="de">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Create Creative Community</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
-  </head>
-  <body>
-    <main class="container">
-      <p class="eyebrow">Create Creative Community</p>
-      <h1>Dein Projekt startet hier.</h1>
-      <p>Die Grundlage für deine Community ist bereit.</p>
-      <section class="status-card" aria-labelledby="status-heading">
-        <h2 id="status-heading">Verbindungsstatus</h2>
-        <p id="server-status" role="status">Verbindung wird geprüft …</p>
-        <button id="check-status" type="button" data-url="{{ url_for('main.health') }}">
-          Erneut prüfen
-        </button>
-      </section>
-    </main>
-  </body>
-</html>
+{% extends 'base.html' %}
+{% from '_macros.html' import card, pagination with context %}
+{% block title %}{{ 'Professional' if area == 'professional' else 'Meine Kreationen' if area == 'mine' else 'Community' }}{% endblock %}
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">MINECRAFT CREATE SCHEMATICS</p>
+    <h1>{{ 'Von der Community gefeiert.' if area == 'professional' else 'Deine Werkstatt.' if area == 'mine' else 'Große Ideen. Block für Block.' }}</h1>
+    <p class="lede">{% if area == 'professional' %}Von Moderatoren freigegeben oder unter den globalen Top 10 mit mindestens einem Like.{% elif area == 'mine' %}Deine Kreationen hochladen, bearbeiten und mit anderen teilen.{% else %}Entdecke Züge, Häuser und kleine Details für deine nächste Minecraft-Welt.{% endif %}</p>
+  </div>
+  <a class="button" href="{{ url_for('main.create') }}">＋ Kreation hochladen</a>
+</section>
+<div class="gallery-toolbar"><h2>{{ 'Professional' if area == 'professional' else 'Meine Kreationen' if area == 'mine' else 'Community' }} <span class="count">{{ total }}</span></h2><span class="muted">{{ 'Nach Likes' if area == 'professional' else 'Neueste zuerst' }}</span></div>
+<nav class="category-list" aria-label="Kategorien">
+  <a class="category-chip {% if not category %}selected{% endif %}" href="{{ url_for(request.endpoint) }}" {% if not category %}aria-current="true"{% endif %}>Alle Kreationen</a>
+  {% for item in categories %}<a class="category-chip {% if category == item.slug %}selected{% endif %}" href="{{ url_for(request.endpoint, kategorie=item.slug) }}" {% if category == item.slug %}aria-current="true"{% endif %}>{{ item.name }}</a>{% endfor %}
+</nav>
+{% if posts %}
+  <div class="creation-grid">{% for post in posts %}{{ card(post) }}{% endfor %}</div>
+{% else %}
+  <section class="empty-state">
+    <span class="empty-symbol" aria-hidden="true">{{ '✦' if area == 'professional' else '＋' }}</span>
+    <h2>{{ 'Hier entsteht die Professional-Auswahl.' if area == 'professional' else 'Noch keine Kreation in dieser Kategorie.' if category else 'Platz für deine erste Kreation.' }}</h2>
+    <p>{% if area == 'professional' %}Eine Freigabe oder ein Platz unter den zehn beliebtesten Kreationen bringt einen Beitrag hierher.{% else %}Ein Bild, deine Idee und die Schematic. Teile, was du gebaut hast.{% endif %}</p>
+    <a class="button button-secondary" href="{{ url_for('main.index') if area == 'professional' else url_for('main.create') }}">{{ 'Community entdecken' if area == 'professional' else 'Kreation hochladen' }}</a>
+  </section>
+{% endif %}
+{{ pagination(page, pages, category) }}
+{% endblock %}
